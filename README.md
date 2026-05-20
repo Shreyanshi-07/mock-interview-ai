@@ -4,7 +4,7 @@ AI-powered mock interview preparation platform built using Python and Streamlit.
 
 ## Live Demo
 
-https://YOUR-STREAMLIT-URL.streamlit.app
+https://mock-interview-ai-mjmd48veraxfue7bh4qivx.streamlit.app/
 
 ## Features
 
@@ -61,7 +61,7 @@ Screenshots
 
 ### PDF Report
 
-![Report](assets/final evaluation.png)
+![Report](assets/report.png)
 
 Local Setup
 git clone https://github.com/Shreyanshi-07/mock-interview-ai.git
