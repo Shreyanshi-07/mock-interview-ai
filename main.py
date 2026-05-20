@@ -1,3 +1,4 @@
+
 import streamlit as st
 
 from app.services.resume_service import (
@@ -14,10 +15,27 @@ from app.services.feedback_service import (
 
 
 st.set_page_config(
-    page_title="Mock Interview AI"
+    page_title="Mock Interview AI",
+    page_icon="🎯",
+    layout="wide"
 )
 
 st.title("Mock Interview AI")
+
+st.markdown("""
+Practice AI-powered mock interviews tailored to your resume and target role.
+""")
+
+
+st.sidebar.title("Mock Interview AI")
+
+st.sidebar.markdown("""
+### Features
+- Resume Upload
+- AI Question Generation
+- Answer Evaluation
+- Personalized Feedback
+""")
 
 
 role = st.selectbox(
@@ -48,17 +66,23 @@ if uploaded_file is not None:
         uploaded_file
     )
 
-    st.subheader("Extracted Resume Text")
+    with st.expander(
+        "View Extracted Resume Text"
+    ):
 
-    st.text_area(
-        "Resume Content",
-        extracted_text,
-        height=250
-    )
+        st.text_area(
+            "Resume Content",
+            extracted_text,
+            height=250
+        )
 
-    if st.button("Generate Interview Questions"):
+    if st.button(
+        "Generate Interview Questions"
+    ):
 
-        with st.spinner("Generating questions..."):
+        with st.spinner(
+            "Generating questions..."
+        ):
 
             st.session_state.questions = (
                 generate_interview_questions(
@@ -67,31 +91,42 @@ if uploaded_file is not None:
                 )
             )
 
+        st.success(
+            "Interview questions generated successfully!"
+        )
+
     if st.session_state.questions:
 
-        st.subheader("AI Interview Questions")
-
-        st.markdown(
+        for index, question in enumerate(
             st.session_state.questions
-        )
+        ):
 
-        user_answer = st.text_area(
-            "Write your answer here",
-            height=200
-        )
+            st.divider()
 
-        if st.button("Evaluate My Answer"):
+            st.subheader(
+                f"Question {index + 1}"
+            )
 
-            with st.spinner(
-                "Evaluating answer..."
+            st.write(question)
+
+            answer = st.text_area(
+                f"Your Answer for Question {index + 1}",
+                key=f"answer_{index}"
+            )
+
+            if st.button(
+                f"Evaluate Question {index + 1}",
+                key=f"button_{index}"
             ):
 
-                feedback = evaluate_answer(
-                    st.session_state.questions,
-                    user_answer,
-                    role
-                )
+                with st.spinner(
+                    "Evaluating answer..."
+                ):
 
-            st.subheader("AI Feedback")
+                    feedback = evaluate_answer(
+                        question,
+                        answer,
+                        role
+                    )
 
-            st.markdown(feedback)
+                st.markdown(feedback)
