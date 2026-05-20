@@ -48,7 +48,33 @@ mock-interview-ai/
 ├── requirements.txt
 └── README.md
 
-Local Setup
+## Screenshots
+
+### Homepage
+
+![Homepage](assets/homepage.png)
+
+### Dashboard
+
+![Dashboard](assets/dashboard.png)
+
+### Questions
+
+![Questions](assets/questions.png)
+
+### Evaluation
+
+![Evaluation](assets/evaluation.png)
+
+### PDF Report
+
+![Report](assets/report.png)
+
+---
+
+## Local Setup
+
+```bash
 git clone https://github.com/Shreyanshi-07/mock-interview-ai.git
 
 cd mock-interview-ai
