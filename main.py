@@ -8,12 +8,18 @@ from app.services.llm_service import (
     generate_interview_questions
 )
 
+from app.services.feedback_service import (
+    evaluate_answer
+)
+
 
 st.set_page_config(
     page_title="Mock Interview AI"
 )
 
 st.title("Mock Interview AI")
+
+
 role = st.selectbox(
     "Select Interview Role",
     [
@@ -30,6 +36,10 @@ uploaded_file = st.file_uploader(
     "Upload your resume (PDF only)",
     type=["pdf"]
 )
+
+
+if "questions" not in st.session_state:
+    st.session_state.questions = None
 
 
 if uploaded_file is not None:
@@ -50,10 +60,38 @@ if uploaded_file is not None:
 
         with st.spinner("Generating questions..."):
 
-            questions = generate_interview_questions(
-                extracted_text,role
+            st.session_state.questions = (
+                generate_interview_questions(
+                    extracted_text,
+                    role
+                )
             )
+
+    if st.session_state.questions:
 
         st.subheader("AI Interview Questions")
 
-        st.markdown(questions)
+        st.markdown(
+            st.session_state.questions
+        )
+
+        user_answer = st.text_area(
+            "Write your answer here",
+            height=200
+        )
+
+        if st.button("Evaluate My Answer"):
+
+            with st.spinner(
+                "Evaluating answer..."
+            ):
+
+                feedback = evaluate_answer(
+                    st.session_state.questions,
+                    user_answer,
+                    role
+                )
+
+            st.subheader("AI Feedback")
+
+            st.markdown(feedback)
