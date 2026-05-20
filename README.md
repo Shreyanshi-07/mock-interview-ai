@@ -48,6 +48,8 @@ mock-interview-ai/
 ├── requirements.txt
 └── README.md
 
+# Mock Interview AI
+
 ## Screenshots
 
 ### Homepage
@@ -82,11 +84,14 @@ cd mock-interview-ai
 pip install -r requirements.txt
 
 streamlit run main.py
+```
 
-Future Improvements
+---
 
-Real Gemini/OpenAI integration
-Advanced AI scoring system
-Interview history tracking
-Authentication system
-Dark mode UI
+## Future Improvements
+
+- Real Gemini/OpenAI integration
+- Advanced AI scoring system
+- Interview history tracking
+- Authentication system
+- Dark mode UI
