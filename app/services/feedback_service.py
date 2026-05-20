@@ -1,4 +1,4 @@
-from app.services.llm_service import client
+USE_MOCK_DATA = True
 
 
 def evaluate_answer(
@@ -7,39 +7,24 @@ def evaluate_answer(
     role
 ):
 
-    prompt = f"""
-    You are an expert technical interviewer.
+    if USE_MOCK_DATA:
 
-    Evaluate the candidate's answer.
+        return {
+            "technical_score": 8,
+            "communication_score": 7,
+            "problem_solving": 9,
+            "confidence": 6,
+            "strengths": [
+                "Good technical understanding",
+                "Clear explanation"
+            ],
+            "weaknesses": [
+                "Could improve answer structure"
+            ],
+            "improvements": [
+                "Practice concise communication",
+                "Use more real-world examples"
+            ]
+        }
 
-    Role:
-    {role}
-
-    Interview Question:
-    {question}
-
-    Candidate Answer:
-    {answer}
-
-    Give:
-
-    1. Score out of 10
-    2. Strengths
-    3. Weaknesses
-    4. Improvement suggestions
-
-    Keep feedback concise and professional.
-    """
-
-    try:
-
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
-
-        return response.text
-
-    except Exception as e:
-
-        return f"Error generating feedback: {str(e)}"
+    # REAL GEMINI LOGIC LATER

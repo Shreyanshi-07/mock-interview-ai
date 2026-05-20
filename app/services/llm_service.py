@@ -1,16 +1,4 @@
-import os
-import json
-from google import genai
-
-from dotenv import load_dotenv
-
-
-load_dotenv()
-
-
-client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+USE_MOCK_DATA = True
 
 
 def generate_interview_questions(
@@ -18,48 +6,12 @@ def generate_interview_questions(
     role
 ):
 
-    prompt = f"""
-You are a technical interviewer.
-
-Generate exactly 5 interview questions.
-
-Return ONLY valid JSON.
-
-Example:
-[
-  "Question 1",
-  "Question 2"
-]
-
-Role:
-{role}
-
-Resume:
-{resume_text[:3000]}
-"""
-
-    try:
-
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
-        )
-
-
-        questions = json.loads(
-            response.text
-        )
-
-        return questions
-
-    except Exception:
-
-       
+    if USE_MOCK_DATA:
 
         return [
-        "Tell me about yourself.",
-        "Explain a challenging project you worked on.",
-        "What are your strengths and weaknesses?",
-        "Describe a difficult bug you fixed.",
-        "Why do you want this role?"
-    ]
+            "Tell me about yourself.",
+            "Explain a challenging project you worked on.",
+            "How would you debug a slow application?",
+            "Describe a difficult bug you fixed.",
+            "Why are you interested in this role?"
+        ]

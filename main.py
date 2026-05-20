@@ -1,6 +1,7 @@
-
 import streamlit as st
-
+from app.services.report_service import (
+    generate_report
+)
 from app.services.resume_service import (
     extract_text_from_pdf
 )
@@ -80,19 +81,11 @@ if uploaded_file is not None:
         "Generate Interview Questions"
     ):
 
-        with st.spinner(
-            "Generating questions..."
-        ):
-
-            st.session_state.questions = (
-                generate_interview_questions(
-                    extracted_text,
-                    role
-                )
+        st.session_state.questions = (
+            generate_interview_questions(
+                extracted_text,
+                role
             )
-
-        st.success(
-            "Interview questions generated successfully!"
         )
 
     if st.session_state.questions:
@@ -101,13 +94,15 @@ if uploaded_file is not None:
             st.session_state.questions
         ):
 
-            st.divider()
-
-            st.subheader(
-                f"Question {index + 1}"
+            feedback_key = (
+                f"feedback_{index}"
             )
 
-            st.write(question)
+            st.markdown(
+                f"### Question {index + 1}"
+            )
+
+            st.info(question)
 
             answer = st.text_area(
                 f"Your Answer for Question {index + 1}",
@@ -119,14 +114,87 @@ if uploaded_file is not None:
                 key=f"button_{index}"
             ):
 
-                with st.spinner(
-                    "Evaluating answer..."
-                ):
+                st.session_state[
+                    feedback_key
+                ] = evaluate_answer(
+                    question,
+                    answer,
+                    role
+                )
 
-                    feedback = evaluate_answer(
-                        question,
-                        answer,
-                        role
+            if feedback_key in st.session_state:
+
+                st.subheader(
+                    "AI Feedback Dashboard"
+                )
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+
+                    st.metric(
+                        "Technical Knowledge",
+                        f"{st.session_state[feedback_key]['technical_score']}/10"
                     )
 
-                st.markdown(feedback)
+                    st.metric(
+                        "Problem Solving",
+                        f"{st.session_state[feedback_key]['problem_solving']}/10"
+                    )
+
+                with col2:
+
+                    st.metric(
+                        "Communication",
+                        f"{st.session_state[feedback_key]['communication_score']}/10"
+                    )
+
+                    st.metric(
+                        "Confidence",
+                        f"{st.session_state[feedback_key]['confidence']}/10"
+                    )
+
+                st.subheader("Strengths")
+
+                for strength in st.session_state[
+                    feedback_key
+                ]["strengths"]:
+
+                    st.success(strength)
+
+                st.subheader("Weaknesses")
+
+                for weakness in st.session_state[
+                    feedback_key
+                ]["weaknesses"]:
+
+                    st.error(weakness)
+
+                st.subheader(
+                    "Improvement Suggestions"
+                )
+
+                for improvement in st.session_state[
+                    feedback_key
+                ]["improvements"]:
+
+                    st.info(improvement)
+
+                report_file = generate_report(
+                    st.session_state[feedback_key]
+                )
+
+                with open(
+                    report_file,
+                    "rb"
+                ) as pdf_file:
+
+                    st.download_button(
+                        label="Download Interview Report",
+                        data=pdf_file,
+                        file_name="interview_report.pdf",
+                        mime="application/pdf",
+                        key=f"download_{index}"
+                    )
+
+            st.divider()
