@@ -41,7 +41,27 @@ mock-interview-ai/
 └── README.md
 Screenshots
 
-(Add screenshots here later)
+## Screenshots
+
+### Homepage
+
+![Homepage](assets/homepage.png)
+
+### Dashboard
+
+![Dashboard](assets/dashboard.png)
+
+### Questions
+
+![Questions](assets/questions.png)
+
+###Evaluation
+
+![Evaluation](assets/evaluation.png)
+
+### PDF Report
+
+![Report](assets/final evaluation.png)
 
 Local Setup
 git clone https://github.com/Shreyanshi-07/mock-interview-ai.git
