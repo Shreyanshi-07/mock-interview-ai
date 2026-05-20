@@ -47,7 +47,7 @@ mock-interview-ai/
 ├── main.py
 ├── requirements.txt
 └── README.md
-
+```
 # Mock Interview AI
 
 ## Screenshots
