@@ -181,7 +181,8 @@ if uploaded_file is not None:
                     st.info(improvement)
 
                 report_file = generate_report(
-                    st.session_state[feedback_key]
+                    st.session_state[feedback_key],
+                    role
                 )
 
                 with open(
