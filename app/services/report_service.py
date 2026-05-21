@@ -1,4 +1,20 @@
 from reportlab.platypus import (
+    KeepTogether
+)
+from reportlab.platypus import (
+    Image
+)
+from app.services.chart_service import (
+    save_radar_chart
+)
+from reportlab.lib.enums import (
+    TA_CENTER
+)
+
+from reportlab.lib.styles import (
+    ParagraphStyle
+)
+from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
     Spacer,
@@ -25,11 +41,39 @@ def generate_report(
 ):
 
     doc = SimpleDocTemplate(
-        filename,
-        pagesize=letter
-    )
+    filename,
+    pagesize=letter,
+    rightMargin=40,
+    leftMargin=40,
+    topMargin=40,
+    bottomMargin=30
+)
+    
+    
 
     styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        "CustomTitle",
+        parent=styles["Title"],
+        alignment=TA_CENTER,
+        fontSize=26,
+        leading=32,
+        textColor=colors.HexColor("#1B2631")
+    )
+
+    section_style = ParagraphStyle(
+        "SectionHeading",
+        parent=styles["Heading2"],
+        textColor=colors.HexColor("#154360"),
+        spaceAfter=12
+    )
+
+    summary_style = ParagraphStyle(
+        "Summary",
+        parent=styles["BodyText"],
+        fontSize=11,
+        leading=18
+    )
 
     elements = []
 
@@ -39,7 +83,7 @@ def generate_report(
 
     title = Paragraph(
         "AI Mock Interview Report",
-        styles["Title"]
+        title_style
     )
 
     elements.append(title)
@@ -67,7 +111,7 @@ def generate_report(
     )
     elements.append(
         HRFlowable(
-        width="100%"
+            width="100%"
     )
 )
 
@@ -84,26 +128,166 @@ def generate_report(
         ) / 4,
         1
     )
+    if overall_score >= 8:
 
-    overall = Paragraph(
-        f"<b>Overall Interview Score:</b> {overall_score}/10",
-        styles["Heading2"]
-    )
+        status = "STRONG HIRE"
 
-    elements.append(overall)
+        status_color = "#1E8449"
+
+    elif overall_score >= 6:
+
+        status = "HIRE"
+
+        status_color = "#2E86C1"
+
+    elif overall_score >= 4:
+
+        status = "HOLD"
+
+        status_color = "#CA6F1E"
+
+    else:
+
+        status = "NO HIRE"
+
+        status_color = "#C0392B"
+    score_box = Table(
+    [[
+        Paragraph(
+            f"""
+            <para align=center>
+            <font size=24 color='white'>
+            <b>{overall_score}/10</b>
+            </font>
+            <br/>
+            <font size=12 color='white'>
+            Overall Interview Score
+            </font>
+            </para>
+            """,
+            styles["BodyText"]
+        )
+    ]],
+    colWidths=[400]
+)
+    chart_path = save_radar_chart(
+    feedback
+)
+
+    score_box.setStyle(
+    TableStyle([
+        (
+            "BACKGROUND",
+            (0, 0),
+            (-1, -1),
+            colors.HexColor("#1F618D")
+        ),
+
+        (
+            "BOX",
+            (0, 0),
+            (-1, -1),
+            0,
+            colors.white
+        ),
+
+        (
+            "TOPPADDING",
+            (0, 0),
+            (-1, -1),
+            20
+        ),
+
+        (
+            "BOTTOMPADDING",
+            (0, 0),
+            (-1, -1),
+            20
+        ),
+
+        (
+            "ALIGN",
+            (0, 0),
+            (-1, -1),
+            "CENTER"
+        )
+    ])
+)
+
+    elements.append(score_box)
+    status_box = Table(
+    [[
+        Paragraph(
+            f"""
+            <para align=center>
+            <font size=12 color='white'>
+            <b>{status}</b>
+            </font>
+            </para>
+            """,
+            styles["BodyText"]
+        )
+    ]],
+    colWidths=[160]
+)
+
+    status_box.setStyle(
+    TableStyle([
+        (
+            "BACKGROUND",
+            (0, 0),
+            (-1, -1),
+            colors.HexColor(
+                status_color
+            )
+        ),
+
+        (
+            "ALIGN",
+            (0, 0),
+            (-1, -1),
+            "CENTER"
+        ),
+
+        (
+            "TOPPADDING",
+            (0, 0),
+            (-1, -1),
+            8
+        ),
+
+        (
+            "BOTTOMPADDING",
+            (0, 0),
+            (-1, -1),
+            8
+        ),
+
+        (
+            "BOX",
+            (0, 0),
+            (-1, -1),
+            0,
+            colors.white
+        )
+    ])
+)
+
+    status_box.hAlign = "CENTER"
+
+    elements.append(status_box)
 
     elements.append(
-        Spacer(1, 20)
-    )
+    Spacer(1, 20)
+)
+
+    elements.append(
+    Spacer(1, 25)
+)
+
     summary = Paragraph(
-    """
-    The candidate demonstrated strong technical
-    understanding and problem-solving abilities.
-    Communication skills were clear and structured,
-    with good overall interview performance across
-    key competency areas.
-    """,
-    styles["BodyText"]
+    feedback["summary"],
+    summary_style
 )
 
     elements.append(summary)
@@ -111,6 +295,8 @@ def generate_report(
     elements.append(
     Spacer(1, 20)
 )
+
+
 
     table_data = [
         ["Competency", "Score"],
@@ -139,8 +325,8 @@ def generate_report(
     table.hAlign = "CENTER"
     table.setStyle(
     TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#D6EAF8")),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.black),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#154360")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
 
         ("GRID", (0, 0), (-1, -1), 1, colors.grey),
 
@@ -158,24 +344,38 @@ def generate_report(
 )
 
     elements.append(table)
+    elements.append(
+    Spacer(1, 25)
+)
+
+    chart = Image(
+    chart_path,
+    width=300,
+    height=300
+)
+
+    chart.hAlign = "CENTER"
+
+    elements.append(chart)
 
     elements.append(
-        Spacer(1, 20)
-    )
+    Spacer(1, 20)
+)
 
     elements.append(
         Paragraph(
             "Strengths",
-            styles["Heading2"]
+            section_style
         )
     )
+    
 
     for strength in feedback["strengths"]:
 
         elements.append(
             Paragraph(
                 f"• {strength}",
-                styles["BodyText"]
+                summary_style
             )
         )
 
@@ -186,7 +386,7 @@ def generate_report(
     elements.append(
         Paragraph(
             "Weaknesses",
-            styles["Heading2"]
+            section_style
         )
     )
 
@@ -206,7 +406,7 @@ def generate_report(
     elements.append(
         Paragraph(
             "Improvement Suggestions",
-            styles["Heading2"]
+            section_style
         )
     )
 
@@ -221,7 +421,7 @@ def generate_report(
             )
         )
     elements.append(
-    Spacer(1, 30)
+    Spacer(1, 15)
 )
 
     footer = Paragraph(

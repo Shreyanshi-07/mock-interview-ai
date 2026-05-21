@@ -1,4 +1,5 @@
 import streamlit as st
+
 from app.services.report_service import (
     generate_report
 )
@@ -9,11 +10,15 @@ from app.services.resume_service import (
 from app.services.llm_service import (
     generate_interview_questions
 )
-
+from app.services.chart_service import (
+    create_radar_chart
+)
 from app.services.feedback_service import (
     evaluate_answer
 )
-
+from app.services.skill_service import (
+    extract_skills
+)
 
 st.set_page_config(
     page_title="Mock Interview AI",
@@ -49,7 +54,14 @@ role = st.selectbox(
         "AI/ML Engineer"
     ]
 )
-
+difficulty = st.selectbox(
+    "Select Difficulty Level",
+    [
+        "Beginner",
+        "Intermediate",
+        "Advanced"
+    ]
+)
 
 uploaded_file = st.file_uploader(
     "Upload your resume (PDF only)",
@@ -66,16 +78,25 @@ if uploaded_file is not None:
     extracted_text = extract_text_from_pdf(
         uploaded_file
     )
-
+    skills = extract_skills(
+        extracted_text
+)
     with st.expander(
         "View Extracted Resume Text"
     ):
 
-        st.text_area(
-            "Resume Content",
-            extracted_text,
-            height=250
-        )
+        st.code(
+            extracted_text[:1500]
+)
+    if skills:
+
+        st.subheader(
+        "Detected Skills"
+    )
+
+        st.success(
+        ", ".join(skills)
+    )
 
     if st.button(
         "Generate Interview Questions"
@@ -84,7 +105,9 @@ if uploaded_file is not None:
         st.session_state.questions = (
             generate_interview_questions(
                 extracted_text,
-                role
+                role,
+                skills,
+                difficulty
             )
         )
 
@@ -153,7 +176,13 @@ if uploaded_file is not None:
                         "Confidence",
                         f"{st.session_state[feedback_key]['confidence']}/10"
                     )
+                    chart = create_radar_chart(
+                            st.session_state[
+                                feedback_key
+                        ]
+                    )
 
+                    st.pyplot(chart)
                 st.subheader("Strengths")
 
                 for strength in st.session_state[
@@ -180,22 +209,47 @@ if uploaded_file is not None:
 
                     st.info(improvement)
 
-                report_file = generate_report(
-                    st.session_state[feedback_key],
-                    role
-                )
+                    st.divider()
 
-                with open(
-                    report_file,
-                    "rb"
-                ) as pdf_file:
+    latest_feedback = None
 
-                    st.download_button(
-                        label="Download Interview Report",
-                        data=pdf_file,
-                        file_name="interview_report.pdf",
-                        mime="application/pdf",
-                        key=f"download_{index}"
-                    )
+    for index, question in enumerate(
+        st.session_state.questions or []
+        ):
 
-            st.divider()
+        feedback_key = (
+            f"feedback_{index}"
+        )
+
+        if feedback_key in st.session_state:
+
+            latest_feedback = (
+                st.session_state[
+                    feedback_key
+                ]
+            )
+
+    if latest_feedback:
+
+        st.subheader(
+            "Final Interview Report"
+        )
+
+        report_file = generate_report(
+            latest_feedback,
+            role
+        )
+
+        with open(
+            report_file,
+            "rb"
+        ) as pdf_file:
+
+            st.download_button(
+                label="Download Full Interview Report",
+                data=pdf_file,
+                file_name="interview_report.pdf",
+                mime="application/pdf"
+            )
+
+        st.divider()
