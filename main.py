@@ -1,5 +1,5 @@
 import streamlit as st
-
+import time
 from app.services.report_service import (
     generate_report
 )
@@ -26,22 +26,63 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("Mock Interview AI")
-
+st.markdown(
+    """
+    <h1 style='
+        font-size:48px;
+        font-weight:700;
+        color:#F8F9F9;
+        margin-bottom:0;
+    '>
+        Mock Interview AI
+    </h1>
+    """,
+    unsafe_allow_html=True
+)
+st.markdown(
+    """
+    <p style='
+        font-size:18px;
+        color:#D5D8DC;
+        margin-top:0;
+        margin-bottom:10px;
+    '>
+        AI-powered interview preparation platform
+        with intelligent evaluation analytics.
+    </p>
+    """,
+    unsafe_allow_html=True
+)
 st.markdown("""
-Practice AI-powered mock interviews tailored to your resume and target role.
-""")
+<style>
+hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+</style>
+""", unsafe_allow_html=True)
+st.divider()
 
 
 st.sidebar.title("Mock Interview AI")
 
-st.sidebar.markdown("""
-### Features
-- Resume Upload
-- AI Question Generation
-- Answer Evaluation
-- Personalized Feedback
-""")
+st.sidebar.markdown(
+    """
+    ## Platform Features
+
+    ✅ Resume Analysis
+
+    ✅ AI Question Generation
+
+    ✅ Adaptive Difficulty Levels
+
+    ✅ AI-Powered Evaluation
+
+    ✅ Analytics Dashboard
+
+    ✅ Executive PDF Reports
+    """
+)
 
 
 role = st.selectbox(
@@ -62,6 +103,11 @@ difficulty = st.selectbox(
         "Advanced"
     ]
 )
+timer_minutes = st.selectbox(
+    "Interview Timer (Minutes)",
+    [1, 2, 5, 10]
+)
+
 
 uploaded_file = st.file_uploader(
     "Upload your resume (PDF only)",
@@ -72,6 +118,9 @@ uploaded_file = st.file_uploader(
 if "questions" not in st.session_state:
     st.session_state.questions = None
 
+if "start_time" not in st.session_state:
+
+    st.session_state.start_time = None
 
 if uploaded_file is not None:
 
@@ -100,6 +149,7 @@ if uploaded_file is not None:
 
     if st.button(
         "Generate Interview Questions"
+        
     ):
 
         st.session_state.questions = (
@@ -110,13 +160,35 @@ if uploaded_file is not None:
                 difficulty
             )
         )
+        import time
+
+        st.session_state.start_time = (
+        time.time()
+)
 
     if st.session_state.questions:
 
         for index, question in enumerate(
             st.session_state.questions
         ):
+            if st.session_state.start_time:
+                elapsed_time = (
+                time.time()
+            -   st.session_state.start_time
+)
 
+            remaining_time = max(
+            0,
+            timer_minutes * 60 - int(elapsed_time)
+)
+
+            minutes = remaining_time // 60
+
+            seconds = remaining_time % 60
+
+            st.warning(
+            f"⏳ Time Remaining: {minutes:02}:{seconds:02}"
+)
             feedback_key = (
                 f"feedback_{index}"
             )
@@ -155,26 +227,80 @@ if uploaded_file is not None:
 
                 with col1:
 
-                    st.metric(
-                        "Technical Knowledge",
-                        f"{st.session_state[feedback_key]['technical_score']}/10"
+                    st.markdown(
+                            f"""
+                        <div style="
+                            background-color:#1F618D;
+                            padding:20px;
+                            border-radius:15px;
+                            text-align:center;
+                            color:white;
+                            margin-bottom:15px;
+                        ">
+                            <h3>Technical Knowledge</h3>
+                            <h1>
+                                {st.session_state[feedback_key]['technical_score']}/10
+                            </h1>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
                     )
 
-                    st.metric(
-                        "Problem Solving",
-                        f"{st.session_state[feedback_key]['problem_solving']}/10"
+                    st.markdown(
+                        f"""
+                        <div style="
+                            background-color:#117864;
+                            padding:20px;
+                            border-radius:15px;
+                            text-align:center;
+                            color:white;
+                        ">
+                            <h3>Problem Solving</h3>
+                            <h1>
+                                {st.session_state[feedback_key]['problem_solving']}/10
+                            </h1>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
                     )
 
                 with col2:
 
-                    st.metric(
-                        "Communication",
-                        f"{st.session_state[feedback_key]['communication_score']}/10"
+                    st.markdown(
+                        f"""
+                        <div style="
+                            background-color:#7D3C98;
+                            padding:20px;
+                            border-radius:15px;
+                            text-align:center;
+                            color:white;
+                            margin-bottom:15px;
+                        ">
+                            <h3>Communication</h3>
+                            <h1>
+                                {st.session_state[feedback_key]['communication_score']}/10
+                            </h1>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
                     )
 
-                    st.metric(
-                        "Confidence",
-                        f"{st.session_state[feedback_key]['confidence']}/10"
+                    st.markdown(
+                        f"""
+                        <div style="
+                            background-color:#CA6F1E;
+                            padding:20px;
+                            border-radius:15px;
+                            text-align:center;
+                            color:white;
+                        ">
+                            <h3>Confidence</h3>
+                            <h1>
+                                {st.session_state[feedback_key]['confidence']}/10
+                            </h1>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
                     )
                     chart = create_radar_chart(
                             st.session_state[
@@ -209,7 +335,7 @@ if uploaded_file is not None:
 
                     st.info(improvement)
 
-                    st.divider()
+                st.divider()
 
     latest_feedback = None
 
