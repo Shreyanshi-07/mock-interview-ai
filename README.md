@@ -58,7 +58,7 @@ mock-interview-ai/
 
 ### Dashboard
 
-![Dashboard](assets/dashboard.png)
+![Dashboard](assets/dashborad.png)
 
 ### Questions
 
@@ -68,15 +68,12 @@ mock-interview-ai/
 
 ![Evaluation](assets/ev2.png)
 
-### Evaluation
-
 ![Evaluation](assets/ev3.png)
 
 ### PDF Report1
 
 ![Report](assets/report1.png)
 
-### PDF Report2
 
 ![Report](assets/report2.png)
 
