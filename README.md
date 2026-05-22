@@ -62,15 +62,24 @@ mock-interview-ai/
 
 ### Questions
 
-![Questions](assets/questions.png)
+![Questions](assets/ev1.png)
 
 ### Evaluation
 
-![Evaluation](assets/evaluation.png)
+![Evaluation](assets/ev2.png)
 
-### PDF Report
+### Evaluation
 
-![Report](assets/report.png)
+![Evaluation](assets/ev3.png)
+
+### PDF Report1
+
+![Report](assets/report1.png)
+
+### PDF Report2
+
+![Report](assets/report2.png)
+
 
 ---
 
