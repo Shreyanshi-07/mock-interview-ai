@@ -95,8 +95,6 @@ streamlit run main.py
 ---
 
 ## Future Improvements
-
-- Real Gemini/OpenAI integration
 - Advanced AI scoring system
 - Interview history tracking
 - Authentication system
