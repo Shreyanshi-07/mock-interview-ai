@@ -1,5 +1,6 @@
 import os
 import json
+from typing import Dict, Any
 
 from google import genai
 
@@ -36,10 +37,24 @@ TECH_KEYWORDS = [
 
 
 def evaluate_with_gemini(
-    question,
-    answer,
-    role
-):
+    question: str,
+    answer: str,
+    role: str
+) -> Dict[str, Any]:
+    """
+    Evaluate an interview answer using Gemini AI.
+    
+    Args:
+        question: Interview question asked to the candidate
+        answer: Candidate's response to the question
+        role: Target interview role
+        
+    Returns:
+        Dictionary containing evaluation scores and feedback
+        
+    Raises:
+        Exception: If Gemini API request fails
+    """
 
     prompt = f"""
 You are an expert technical interviewer.
@@ -101,10 +116,21 @@ Example:
 
 def evaluate_answer(
 
-    question,
-    answer,
-    role
-):
+    question: str,
+    answer: str,
+    role: str
+) -> Dict[str, Any]:
+    """
+    Evaluate an interview answer using Gemini AI or fallback scoring.
+    
+    Args:
+        question: Interview question asked to the candidate
+        answer: Candidate's response
+        role: Target interview role
+        
+    Returns:
+        Dictionary containing interview feedback and scores
+    """
 
     try:
 

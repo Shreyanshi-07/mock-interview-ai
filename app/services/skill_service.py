@@ -1,3 +1,6 @@
+from typing import List
+
+
 COMMON_SKILLS = [
     "Python",
     "Java",
@@ -22,8 +25,17 @@ COMMON_SKILLS = [
 
 
 def extract_skills(
-    resume_text
-):
+    resume_text: str
+) -> List[str]:
+    """
+    Extract detected technical skills from resume text.
+    
+    Args:
+        resume_text: Extracted resume text content
+        
+    Returns:
+        List of detected skills
+    """
 
     detected_skills = []
 

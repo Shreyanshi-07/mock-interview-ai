@@ -1,9 +1,11 @@
 import os
 import json
+from typing import List
 
 from google import genai
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 client = genai.Client(
@@ -11,6 +13,7 @@ client = genai.Client(
         "GEMINI_API_KEY"
     )
 )
+
 USE_MOCK_DATA = True
 
 
@@ -52,12 +55,27 @@ SKILL_QUESTIONS = {
     ]
 }
 
+
 def generate_with_gemini(
 
-    role,
-    skills,
-    difficulty
-):
+    role: str,
+    skills: List[str],
+    difficulty: str
+) -> List[str]:
+    """
+    Generate interview questions using Gemini AI.
+    
+    Args:
+        role: Target interview role
+        skills: List of detected technical skills
+        difficulty: Interview difficulty level
+        
+    Returns:
+        List of generated interview questions
+        
+    Raises:
+        Exception: If Gemini API request fails
+    """
 
     prompt = f"""
 You are an expert technical interviewer.
@@ -97,59 +115,72 @@ Example:
     return json.loads(
         cleaned_response
     )
-    
+
+
 def generate_interview_questions(
-    resume_text,
-    role,
-    skills,
-    difficulty
-):
+    resume_text: str,
+    role: str,
+    skills: List[str],
+    difficulty: str
+) -> List[str]:
+    """
+    Generate interview questions based on resume skills and role.
+    
+    Args:
+        resume_text: Extracted text from the resume
+        role: Target interview role
+        skills: List of detected skills
+        difficulty: Selected interview difficulty level
+        
+    Returns:
+        List of interview questions
+    """
 
-        if not USE_MOCK_DATA:
+    if not USE_MOCK_DATA:
 
-            try:
+        try:
 
-                return generate_with_gemini(
-                    role,
-                    skills,
-                    difficulty
-                )
+            return generate_with_gemini(
+                role,
+                skills,
+                difficulty
+            )
 
-            except Exception as e:
+        except Exception as e:
 
-                print(e)
+            print(e)
 
-        difficulty_multiplier = {
+    difficulty_multiplier = {
 
-            "Beginner": 1,
-            "Intermediate": 2,
-            "Advanced": 3
-        }
+        "Beginner": 1,
+        "Intermediate": 2,
+        "Advanced": 3
+    }
 
-        questions = []
+    questions = []
 
-        for skill in skills:
+    for skill in skills:
 
-            if skill in SKILL_QUESTIONS:
+        if skill in SKILL_QUESTIONS:
 
-                selected_questions = (
-                    SKILL_QUESTIONS[skill]
-                )
+            selected_questions = (
+                SKILL_QUESTIONS[skill]
+            )
 
-                questions.extend(
-                    selected_questions[
-                        :difficulty_multiplier[
-                            difficulty
-                        ]
+            questions.extend(
+                selected_questions[
+                    :difficulty_multiplier[
+                        difficulty
                     ]
-                )
+                ]
+            )
 
-        if len(questions) < 5:
+    if len(questions) < 5:
 
-            questions.extend([
-                "Tell me about yourself.",
-                "Explain a challenging project you worked on.",
-                "Why do you want this role?"
-            ])
+        questions.extend([
+            "Tell me about yourself.",
+            "Explain a challenging project you worked on.",
+            "Why do you want this role?"
+        ])
 
-        return questions[:5]
+    return questions[:5]

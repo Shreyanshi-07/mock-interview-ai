@@ -1,5 +1,7 @@
 import streamlit as st
 import time
+from app.constants import INTERVIEW_ROLES, DIFFICULTY_LEVELS, TIMER_OPTIONS
+
 from app.services.report_service import (
     generate_report
 )
@@ -85,27 +87,16 @@ st.sidebar.markdown(
 )
 
 
-role = st.selectbox(
-    "Select Interview Role",
-    [
-        "Software Engineer",
-        "Frontend Developer",
-        "Backend Developer",
-        "Data Analyst",
-        "AI/ML Engineer"
-    ]
-)
+role = st.selectbox("Select Interview Role", INTERVIEW_ROLES)
+
 difficulty = st.selectbox(
     "Select Difficulty Level",
-    [
-        "Beginner",
-        "Intermediate",
-        "Advanced"
-    ]
+    DIFFICULTY_LEVELS
 )
+
 timer_minutes = st.selectbox(
     "Interview Timer (Minutes)",
-    [1, 2, 5, 10]
+    TIMER_OPTIONS
 )
 
 
@@ -123,10 +114,16 @@ if "start_time" not in st.session_state:
     st.session_state.start_time = None
 
 if uploaded_file is not None:
-
-    extracted_text = extract_text_from_pdf(
-        uploaded_file
-    )
+    try:
+        extracted_text = extract_text_from_pdf(uploaded_file)
+        
+        if not extracted_text or len(extracted_text.strip()) < 50:
+            st.error("⚠️ Could not extract meaningful text from the PDF. Please make sure it's a valid resume.")
+            st.stop()
+            
+    except Exception as e:
+        st.error(f"⚠️ Error reading PDF: {str(e)}")
+        st.stop()
     skills = extract_skills(
         extracted_text
 )
@@ -147,24 +144,25 @@ if uploaded_file is not None:
         ", ".join(skills)
     )
 
-    if st.button(
-        "Generate Interview Questions"
-        
-    ):
+    if st.button("Generate Interview Questions"):
+        try:
+            with st.spinner("🤖 Analyzing your resume and generating questions..."):
+                st.session_state.questions = generate_interview_questions(
+                    extracted_text,
+                    role,
+                    skills,
+                    difficulty
+                )
+                st.session_state.start_time = time.time()
+                st.success("Questions generated successfully!")
+        except Exception as e:
+            st.error(f"⚠️ Failed to generate questions: {str(e)}")
+            st.error("Please check your API key in the .env file")
+            
 
-        st.session_state.questions = (
-            generate_interview_questions(
-                extracted_text,
-                role,
-                skills,
-                difficulty
-            )
-        )
-        
-
-        st.session_state.start_time = (
-        time.time()
-)
+            st.session_state.start_time = (
+            time.time()
+    )
 
     if st.session_state.questions:
 

@@ -1,9 +1,20 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from typing import Dict, Any
+
 
 def create_radar_chart(
-    feedback
+    feedback: Dict[str, Any]
 ):
+    """
+    Create a radar chart from interview feedback scores.
+    
+    Args:
+        feedback: Dictionary containing interview evaluation scores
+        
+    Returns:
+        Matplotlib figure object containing the radar chart
+    """
 
     labels = [
         "Technical",
@@ -62,10 +73,22 @@ def create_radar_chart(
     )
 
     return fig
+
+
 def save_radar_chart(
-    feedback,
-    filename="radar_chart.png"
-):
+    feedback: Dict[str, Any],
+    filename: str = "radar_chart.png"
+) -> str:
+    """
+    Save the radar chart as an image file.
+    
+    Args:
+        feedback: Dictionary containing interview evaluation scores
+        filename: Name of the output image file
+        
+    Returns:
+        Path to the saved radar chart image
+    """
 
     fig = create_radar_chart(
         feedback
