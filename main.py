@@ -160,7 +160,7 @@ if uploaded_file is not None:
                 difficulty
             )
         )
-        import time
+        
 
         st.session_state.start_time = (
         time.time()

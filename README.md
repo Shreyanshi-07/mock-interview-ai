@@ -22,12 +22,14 @@ https://mock-interview-ai-mjmd48veraxfue7bh4qivx.streamlit.app/
 
 ## Tech Stack
 
-- Python
-- Streamlit
-- ReportLab
-- PyMuPDF
-- Git & GitHub
+## Tech Stack
 
+- **Google Gemini 1.5 Flash** — AI-powered question generation and evaluation
+- **Python** — Backend logic and API integration
+- **Streamlit** — Interactive web interface
+- **PyMuPDF** — Resume PDF parsing
+- **ReportLab** — Automated PDF report generation
+- **Matplotlib** — Performance radar charts
 ---
 
 ## Project Architecture
@@ -58,7 +60,7 @@ mock-interview-ai/
 
 ### Dashboard
 
-![Dashboard](assets/dashborad.png)
+![Dashboard](assets/dashboard.png)
 
 ### Questions
 
@@ -94,8 +96,20 @@ streamlit run main.py
 
 ---
 
+## Current Features
+
+- **Real-time AI evaluation** powered by Google Gemini API  
+- Resume-based question generation tailored to your experience  
+- Multi-dimensional scoring (Technical, Communication, Problem-solving, Confidence)  
+- Interactive performance dashboard with radar charts  
+- Downloadable PDF interview reports  
+- Role-specific interview modes (SWE, Frontend, Backend, Data, ML)  
+
 ## Future Improvements
-- Advanced AI scoring system
-- Interview history tracking
-- Authentication system
-- Dark mode UI
+
+- User authentication and session management
+- Interview history tracking with trend analysis
+- Voice input/output using Whisper + TTS
+- Real-time streaming AI responses
+- Advanced analytics dashboard
+- Docker containerization

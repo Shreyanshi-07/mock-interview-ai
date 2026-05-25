@@ -1,4 +1,34 @@
-venv/
+
+# Python
 __pycache__/
-.env
+*.py[cod]
+*$py.class
 *.pyc
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Environment variables
+.env
+.env.local
+
+# Generated files
+*.pdf
+*.png
+radar_chart.png
+interview_report.pdf
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
